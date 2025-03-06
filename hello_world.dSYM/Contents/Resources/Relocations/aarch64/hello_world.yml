@@ -1,0 +1,5 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     '/Users/anhhoang/SJCC/CIS054/hello_world'
+relocations:     []
+...

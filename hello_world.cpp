@@ -9,6 +9,7 @@ int main() {
     // Print Hello World to the terminal
     cout << "Hello World!" << endl;
     cout << "This is CIS054 class" << endl;
+    cout << 3+5 << endl;
 
     return 0;
 }
