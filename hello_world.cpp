@@ -8,6 +8,7 @@ using namespace std;
 int main() {
     // Print Hello World to the terminal
     cout << "Hello World!" << endl;
+    cout << "This is CIS054 class" << endl;
 
     return 0;
 }
