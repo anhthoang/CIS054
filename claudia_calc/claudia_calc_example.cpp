@@ -13,6 +13,10 @@ namespace claudia_calc {
  * utility functions
  */
 
+//add registers array to hold value
+double registers[NUM_REGISTERS] = {0};
+
+
 inline bool is_register(char const ch) { return tolower(ch) >= 'a' && ch <= 'd'; }
 
 inline bool is_register(string const str) { return str.size() == 1 && is_register(str[0]); }
@@ -40,6 +44,14 @@ inline bool validate_command(const string &cmd) {
            ch == 'm' || ch == 'p' || ch == 'q' || (ch >= '1' && ch <= '4');
 }
 
+//display the registers
+
+void display_registers(){
+    cout << "A = " << registers[A] << endl;
+    cout << "B = " << registers[B] << endl;
+    cout << "C = " << registers[C] << endl;
+    cout << "D = " << registers[D] << endl;
+}
 
 
 /*
@@ -77,7 +89,14 @@ void execute(string const cmd) {
 
     switch (cmd_ch) {
         case 'a':
-            spdlog::error("cmd={} not implemented", cmd_ch);
+            double value;
+            cout << "Enter value for register A: ";
+            cin >> value;
+            cin.ignore();
+            registers[A] = value;
+            spdlog:: info("Store {} in register A", value);
+            display_registers();
+            //spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         case 'b':
             spdlog::error("cmd={} not implemented", cmd_ch);
@@ -134,14 +153,14 @@ void start() {
     while (cmd != "q") {
         cout << "Enter a command: ";
         cin >> cmd;
-        spdlog::debug("User input : '{}", cmd);
+        spdlog::debug("User input : '{}'", cmd);
 
         if (!validate_command(cmd)) {
             spdlog::error("Invalid command: '{}'", cmd);
             cout << "Invalid input! Enter only one character command. Type 'm' to see menu.\n";
             continue;
         }
-        
+
         execute(cmd);
     }
 }
