@@ -15,7 +15,7 @@ namespace claudia_calc {
 
 inline bool is_register(char const ch) { return tolower(ch) >= 'a' && ch <= 'd'; }
 
-inline bool is_register(string const str) { return str.size() != 0 && is_register(str[0]); }
+inline bool is_register(string const str) { return str.size() == 1 && is_register(str[0]); }
 
 inline reg_name to_reg_name(char const ch) {
     assert(is_register(ch));
@@ -28,6 +28,19 @@ inline reg_name to_reg_name(string const str) {
 }
 
 inline char to_char(reg_name rn) { return static_cast<char>(rn + 'a'); }
+
+//validate input 
+inline bool validate_command(const string &cmd) {
+    if (cmd.size() != 1) {
+        return false;  // Must be exactly one character long
+    }
+
+    char ch = cmd[0];
+    return is_register(ch) || ch == '+' || ch == '-' || ch == '*' || ch == '/' ||
+           ch == 'm' || ch == 'p' || ch == 'q' || (ch >= '1' && ch <= '4');
+}
+
+
 
 /*
  * calculator functions
@@ -121,7 +134,14 @@ void start() {
     while (cmd != "q") {
         cout << "Enter a command: ";
         cin >> cmd;
-        spdlog::debug("cmd={}", cmd);
+        spdlog::debug("User input : '{}", cmd);
+
+        if (!validate_command(cmd)) {
+            spdlog::error("Invalid command: '{}'", cmd);
+            cout << "Invalid input! Enter only one character command. Type 'm' to see menu.\n";
+            continue;
+        }
+        
         execute(cmd);
     }
 }
