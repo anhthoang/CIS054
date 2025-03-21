@@ -5,6 +5,8 @@
 #include <iostream>
 
 #include "spdlog/spdlog.h"
+
+#include <iomanip>
 using namespace std;
 
 namespace claudia_calc {
@@ -33,6 +35,10 @@ inline reg_name to_reg_name(string const str) {
 
 inline char to_char(reg_name rn) { return static_cast<char>(rn + 'a'); }
 
+inline void print_line() { cout << std::string(MENU_WIDTH, '-') << endl; }
+
+inline void print_title(string const title) { cout << fmt::format("{:^{}}", title, MENU_WIDTH) << endl; }
+
 //validate input 
 inline bool validate_command(const string &cmd) {
     if (cmd.size() != 1) {
@@ -47,10 +53,33 @@ inline bool validate_command(const string &cmd) {
 //display the registers
 
 void display_registers(){
+    cout << fixed << setprecision(2);
+    cout << "Current register values" << endl;
     cout << "A = " << registers[A] << endl;
     cout << "B = " << registers[B] << endl;
     cout << "C = " << registers[C] << endl;
     cout << "D = " << registers[D] << endl;
+    print_line();
+}
+
+//validate_input_value
+double validate_input_value(){
+    string input;
+    double value;
+    bool valid;
+
+    do{
+        getline(cin, input);
+        stringstream parseString(input);
+        valid = (parseString >> value && parseString.eof());
+
+        if(!valid){
+            cout << "Invalid input. Please enter a number:";
+        }
+    }while(!valid);
+
+    return value;
+    
 }
 
 
@@ -58,9 +87,7 @@ void display_registers(){
  * calculator functions
  */
 
-inline void print_line() { cout << std::string(MENU_WIDTH, '-') << endl; }
 
-inline void print_title(string const title) { cout << fmt::format("{:^{}}", title, MENU_WIDTH) << endl; }
 
 void print_menu() {
     print_line();
@@ -80,32 +107,53 @@ void print_menu() {
 
 void execute(string const cmd) {
     // validate command size
-    if (cmd.size() == 0) {
-        spdlog::error("Empty command");
-        return;
-    }
+    // if (cmd.size() == 0) {
+    //     spdlog::error("Empty command");
+    //     return;
+    // }
     // lower annd get first char of command
     char const cmd_ch = std::tolower(cmd[0]);
+    //double input_value = 0.0;
 
     switch (cmd_ch) {
         case 'a':
-            double value;
+            double value_a;
             cout << "Enter value for register A: ";
-            cin >> value;
-            cin.ignore();
-            registers[A] = value;
-            spdlog:: info("Store {} in register A", value);
+            value_a = validate_input_value();
+            registers[A] = value_a;
+            // spdlog:: info("Store {} in register A", value_a);
             display_registers();
             //spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         case 'b':
-            spdlog::error("cmd={} not implemented", cmd_ch);
+            double value_b;
+            cout << "Enter value for register B: ";
+            value_b = validate_input_value();
+            cin.ignore();
+            registers[B] = value_b;
+            //spdlog:: info("Store {} in register B", value_b);
+            display_registers();
+            //spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         case 'c':
-            spdlog::error("cmd={} not implemented", cmd_ch);
+            double value_c;
+            cout << "Enter value for register C: ";
+            value_c = validate_input_value();
+            cin.ignore();
+            registers[C] = value_c;
+            //spdlog:: info("Store {} in register C", value_c);
+            display_registers();
+            //spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         case 'd':
-            spdlog::error("cmd={} not implemented", cmd_ch);
+            double value_d;
+            cout << "Enter value for register D: ";
+            value_d = validate_input_value();
+            cin.ignore();
+            registers[D] = value_d;
+            //spdlog:: info("Store {} in register D", value_d);
+            display_registers();
+            //spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         case '+':
             spdlog::error("cmd={} not implemented", cmd_ch);
@@ -120,7 +168,9 @@ void execute(string const cmd) {
             spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         case '1':
-            spdlog::error("cmd={} not implemented", cmd_ch);
+            registers[A] = 0;
+            display_registers();
+            //spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         case '2':
             spdlog::error("cmd={} not implemented", cmd_ch);
@@ -132,7 +182,8 @@ void execute(string const cmd) {
             spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         case 'm':
-            spdlog::error("cmd={} not implemented", cmd_ch);
+            //spdlog::error("cmd={} not implemented", cmd_ch);
+            print_menu();
             break;
         case 'p':
             spdlog::error("cmd={} not implemented", cmd_ch);
@@ -153,7 +204,7 @@ void start() {
     while (cmd != "q") {
         cout << "Enter a command: ";
         cin >> cmd;
-        spdlog::debug("User input : '{}'", cmd);
+        //spdlog::debug("User input : '{}'", cmd);
 
         if (!validate_command(cmd)) {
             spdlog::error("Invalid command: '{}'", cmd);
@@ -161,6 +212,7 @@ void start() {
             continue;
         }
 
+        cin.ignore();
         execute(cmd);
     }
 }
