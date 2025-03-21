@@ -53,7 +53,7 @@ inline bool validate_command(const string &cmd) {
 //display the registers
 
 void display_registers(){
-    cout << fixed << setprecision(2);
+    cout << fixed << setprecision(3);
     cout << "Current register values" << endl;
     cout << "A = " << registers[A] << endl;
     cout << "B = " << registers[B] << endl;
@@ -65,7 +65,7 @@ void display_registers(){
 //validate_input_value
 double validate_input_value(){
     string input;
-    double value;
+    float value;
     bool valid;
 
     do{
@@ -117,7 +117,7 @@ void execute(string const cmd) {
 
     switch (cmd_ch) {
         case 'a':
-            double value_a;
+            float value_a;
             cout << "Enter value for register A: ";
             value_a = validate_input_value();
             registers[A] = value_a;
@@ -126,59 +126,131 @@ void execute(string const cmd) {
             //spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         case 'b':
-            double value_b;
+            float value_b;
             cout << "Enter value for register B: ";
             value_b = validate_input_value();
-            cin.ignore();
             registers[B] = value_b;
             //spdlog:: info("Store {} in register B", value_b);
             display_registers();
             //spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         case 'c':
-            double value_c;
+            float value_c;
             cout << "Enter value for register C: ";
             value_c = validate_input_value();
-            cin.ignore();
+           
             registers[C] = value_c;
             //spdlog:: info("Store {} in register C", value_c);
             display_registers();
             //spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         case 'd':
-            double value_d;
+            float value_d;
             cout << "Enter value for register D: ";
             value_d = validate_input_value();
-            cin.ignore();
             registers[D] = value_d;
             //spdlog:: info("Store {} in register D", value_d);
             display_registers();
             //spdlog::error("cmd={} not implemented", cmd_ch);
             break;
-        case '+':
-            spdlog::error("cmd={} not implemented", cmd_ch);
+        case '+': {
+            char lhs_reg, rhs_reg;
+            cout << "Enter a lhs register (a-d): ";
+            cin >> lhs_reg;
+            cout << "Enter a rhs register (a-d): ";
+            cin >> rhs_reg;
+            cin.ignore();
+
+            if (!is_register(lhs_reg) || !is_register(rhs_reg)) {
+                cout << "Invalid register(s). Operation cancelled.\n";
+                break;
+            }
+
+            registers[to_reg_name(lhs_reg)] += registers[to_reg_name(rhs_reg)];
+            display_registers();
             break;
-        case '-':
-            spdlog::error("cmd={} not implemented", cmd_ch);
+        }
+        case '-': {
+            char lhs_reg, rhs_reg;
+            cout << "Enter a lhs register (a-d): ";
+            cin >> lhs_reg;
+            cout << "Enter a rhs register (a-d): ";
+            cin >> rhs_reg;
+            cin.ignore();
+
+            if (!is_register(lhs_reg) || !is_register(rhs_reg)) {
+                cout << "Invalid register(s). Operation cancelled.\n";
+                break;
+            }
+
+            registers[to_reg_name(lhs_reg)] -= registers[to_reg_name(rhs_reg)];
+            display_registers();
+            //spdlog::error("cmd={} not implemented", cmd_ch);
             break;
-        case '*':
-            spdlog::error("cmd={} not implemented", cmd_ch);
+        }
+        case '*': {
+            char lhs_reg, rhs_reg;
+            cout << "Enter a lhs register (a-d): ";
+            cin >> lhs_reg;
+            cout << "Enter a rhs register (a-d): ";
+            cin >> rhs_reg;
+            cin.ignore();
+
+            if (!is_register(lhs_reg) || !is_register(rhs_reg)) {
+                cout << "Invalid register(s). Operation cancelled.\n";
+                break;
+            }
+
+            registers[to_reg_name(lhs_reg)] += registers[to_reg_name(rhs_reg)];
+            spdlog::info("Added {} to {}. New value: {}", rhs_reg, lhs_reg, registers[to_reg_name(lhs_reg)]);
+            display_registers();
+            //spdlog::error("cmd={} not implemented", cmd_ch);
             break;
-        case '/':
-            spdlog::error("cmd={} not implemented", cmd_ch);
+        }
+        case '/': {
+            char lhs_reg, rhs_reg;
+            double rhs_value;
+            cout << "Enter a lhs register (a-d): ";
+            cin >> lhs_reg;
+            cout << "Enter a rhs register (a-d): ";
+            cin >> rhs_reg;
+            cin.ignore();
+
+            if (!is_register(lhs_reg) || !is_register(rhs_reg)) {
+                cout << "Invalid register(s). Operation cancelled.\n";
+                break;
+            }
+
+            rhs_value = registers[to_reg_name(rhs_reg)];
+            if (rhs_value == 0) {
+                cout << "Error: Division by zero.\n";
+                break;
+            }
+
+            registers[to_reg_name(lhs_reg)] /= rhs_value;
+            spdlog::info("Divided {} by {}. New value: {}", lhs_reg, rhs_reg, registers[to_reg_name(lhs_reg)]);
+            display_registers();
+            //spdlog::error("cmd={} not implemented", cmd_ch);
             break;
+        }
         case '1':
             registers[A] = 0;
             display_registers();
             //spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         case '2':
-            spdlog::error("cmd={} not implemented", cmd_ch);
+            registers[B] = 0;
+            display_registers();
+            //spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         case '3':
+            registers[C] = 0;
+            display_registers();
             spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         case '4':
+            registers[D] = 0;
+            display_registers();
             spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         case 'm':
@@ -186,7 +258,8 @@ void execute(string const cmd) {
             print_menu();
             break;
         case 'p':
-            spdlog::error("cmd={} not implemented", cmd_ch);
+            display_registers();
+            //spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         case 'q':
             break;
