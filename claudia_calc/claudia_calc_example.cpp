@@ -39,7 +39,7 @@ inline void print_line() { cout << std::string(MENU_WIDTH, '-') << endl; }
 
 inline void print_title(string const title) { cout << fmt::format("{:^{}}", title, MENU_WIDTH) << endl; }
 
-//validate input 
+//validate input command 
 inline bool validate_command(const string &cmd) {
     if (cmd.size() != 1) {
         return false;  // Must be exactly one character long
@@ -201,8 +201,8 @@ void execute(string const cmd) {
                 break;
             }
 
-            registers[to_reg_name(lhs_reg)] += registers[to_reg_name(rhs_reg)];
-            spdlog::info("Added {} to {}. New value: {}", rhs_reg, lhs_reg, registers[to_reg_name(lhs_reg)]);
+            registers[to_reg_name(lhs_reg)] *= registers[to_reg_name(rhs_reg)];
+            //spdlog::info("Added {} to {}. New value: {}", rhs_reg, lhs_reg, registers[to_reg_name(lhs_reg)]);
             display_registers();
             //spdlog::error("cmd={} not implemented", cmd_ch);
             break;
@@ -228,7 +228,7 @@ void execute(string const cmd) {
             }
 
             registers[to_reg_name(lhs_reg)] /= rhs_value;
-            spdlog::info("Divided {} by {}. New value: {}", lhs_reg, rhs_reg, registers[to_reg_name(lhs_reg)]);
+            //spdlog::info("Divided {} by {}. New value: {}", lhs_reg, rhs_reg, registers[to_reg_name(lhs_reg)]);
             display_registers();
             //spdlog::error("cmd={} not implemented", cmd_ch);
             break;
@@ -246,12 +246,12 @@ void execute(string const cmd) {
         case '3':
             registers[C] = 0;
             display_registers();
-            spdlog::error("cmd={} not implemented", cmd_ch);
+            //spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         case '4':
             registers[D] = 0;
             display_registers();
-            spdlog::error("cmd={} not implemented", cmd_ch);
+            //spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         case 'm':
             //spdlog::error("cmd={} not implemented", cmd_ch);
