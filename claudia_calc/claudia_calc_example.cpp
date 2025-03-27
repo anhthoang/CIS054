@@ -281,7 +281,7 @@ void start() {
 
         if (!validate_command(cmd)) {
             spdlog::error("Invalid command: '{}'", cmd);
-            cout << "Invalid input! Enter only one character command. Type 'm' to see menu.\n";
+            cout << "Invalid command. Type 'm' to see menu.\n";
             continue;
         }
 
