@@ -43,6 +43,24 @@ namespace claudia_calc
         print_line();
     }
 
+    //helper function to read input for registers 
+    void handle_register_input(calc& c, reg_name name) {
+        string input;
+        cout << "Enter value for register " << static_cast<char>('A' + static_cast<int>(name)) << ": ";
+        cin.ignore();
+        getline(cin, input);
+    
+        stringstream ss(input);
+        float num;
+        if (ss >> num && ss.eof()) {
+            c.set(name, num);
+            spdlog::info("Stored number {} in register {}", num, static_cast<char>('A' + static_cast<int>(name)));
+        } else {
+            c.get(name).set_string(input);
+            spdlog::info("Stored string \"{}\" in register {}", input, static_cast<char>('A' + static_cast<int>(name)));
+        }
+    }
+
     // execute a command
     // a   Asks the user to enter a number or string for A
     // b   Asks the user to enter a number or string for B
@@ -73,84 +91,87 @@ namespace claudia_calc
 
         switch (cmd_ch)
         {
-        case 'a': {
-            float value;
-            cout << "Enter value for register A: ";
-            while (!(cin >> value))
-            {
-                cin.clear();
-                cin.ignore(10000, '\n');
-                cout << "Invalid input. Please enter a number: ";
-            }
-            cin.ignore(); // clear newline
+        case 'a':
 
-            c.set(A, value); // 'c' is your calc object
-            spdlog::info("Stored {} in register A", value);
-
-            //spdlog::error("cmd={} not implemented", cmd_ch);
+            handle_register_input(c,A);
             break;
-        }
-        case 'b':{
+        
+        case 'b':
+        {
             spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         }
-        case 'c':{
+        case 'c':
+        {
             spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         }
-        case 'd':{
+        case 'd':
+        {
             spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         }
-        case '+':{
+        case '+':
+        {
             float a_val = c.get(A).get_number();
             float b_val = c.get(B).get_number();
             float result = a_val + b_val;
             c.set(A, result);
             spdlog::info("A = A + B -> {} + {} = {}", a_val, b_val, result);
-            //spdlog::error("cmd={} not implemented", cmd_ch);
+            // spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         }
-        case '-':{
+        case '-':
+        {
             spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         }
-        case '*':{
+        case '*':
+        {
             spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         }
-        case '/':{
+        case '/':
+        {
             spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         }
-        case '1':{
+        case '1':
+        {
             spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         }
-        case '2':{
+        case '2':
+        {
             spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         }
-        case '3':{
+        case '3':
+        {
             spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         }
-        case '4':{
+        case '4':
+        {
             spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         }
-        case 'm':{
+        case 'm':
+        {
             print_menu(c);
             break;
         }
-        case 'p':{
+        case 'p':
+        {
             spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         }
-        case 'q':{
+        case 'q':
+        {
             break;
         }
-        default:{
+        default:
+        {
             spdlog::error("{} is an unknown command", cmd_ch);
             break;
         }
