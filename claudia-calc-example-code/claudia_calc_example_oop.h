@@ -46,8 +46,15 @@ namespace claudia_calc
     public:
         reg(reg_name name, reg_type type) : _name(name), _type(type), _num(0.0F), _str() {}
         // no destructor, using rule of zero
+
+        //getter and setter for number
         float get_number() const { return _num; }
-        void set_number(float val) { _num = val; }
+        void set_number(float val) { _num = val; _type = NUMBER; }
+
+        //getter and setter for string value
+        string get_string() const {return _str; }
+        void set_string(const string& val) {_str = val; _type =  STRING; }
+
         void clear()
         {
             _num = 0.0F;
@@ -57,36 +64,38 @@ namespace claudia_calc
         reg_type type() const { return _type; }
     };
 
-    class calc {
-        private:
-         array<reg, NUM_REGISTERS> _regs;
-     
-        public:
-         calc();
-     
-         reg& get(reg_name name) { return _regs[static_cast<int>(name)]; }
-         const reg& get(reg_name name) const { return _regs[static_cast<int>(name)]; }
-     
-         void set(reg_name name, float value) { _regs[static_cast<int>(name)].set_number(value); }
-         void clear(reg_name name) { _regs[static_cast<int>(name)].clear(); }
-     
-         void clear_all() {
-             for (auto& r : _regs) {
-                 r.clear();
-             }
-         }
-     
-         void perform(operation op);  // optional if you want centralized math logic
-     };
+    class calc
+    {
+    private:
+        array<reg, NUM_REGISTERS> _regs;
 
-     class ui {
-        
-        public:
-            void print_menu(const calc& c) const;
-            void execute(calc& c, const string cmd);
-            void start(calc& c);
-        };
+    public:
+        calc();
 
-     
+        reg &get(reg_name name) { return _regs[static_cast<int>(name)]; }
+        const reg &get(reg_name name) const { return _regs[static_cast<int>(name)]; }
+
+        void set(reg_name name, float value) { _regs[static_cast<int>(name)].set_number(value); }
+        void clear(reg_name name) { _regs[static_cast<int>(name)].clear(); }
+
+        void clear_all()
+        {
+            for (auto &r : _regs)
+            {
+                r.clear();
+            }
+        }
+
+        void perform(operation op); // optional if you want centralized math logic
+    };
+
+    class ui
+    {
+
+    public:
+        void print_menu(const calc &c) const;
+        void execute(calc &c, const string cmd);
+        void start(calc &c);
+    };
 
 } // namespace claudia_calc
