@@ -25,11 +25,11 @@ int main(){
     cin >> n;
 
     //Check if n is non-negative and even number
-    if (n >= 0){
-       double result = power(x,n);
-       cout << x << "raised to the power of " << n << "is" << result << endl;
-    }else{
+    while (n < 0){
         cout << "Please enter a non-negative whole number" << endl;
+        cin >> n;
     }
+    double result = power(x,n);
+    cout << x << " raised to the power of " << n << " is " << result << endl;
     return 0;
 }
