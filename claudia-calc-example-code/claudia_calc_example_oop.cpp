@@ -43,6 +43,31 @@ namespace claudia_calc
         print_line();
     }
 
+    void calc::display_registers() const
+    {
+        for (int i = 0; i < NUM_REGISTERS; ++i)
+        {
+            const reg &r = _regs[i];
+            char label = 'A' + i;
+
+            cout << label << "  ";
+
+            if (r.type() == NUMBER)
+            {
+                cout << "number = " << fixed << setprecision(3) << r.get_number();
+            }
+            else if (r.type() == STRING)
+            {
+                cout << "string = \"" << r.get_string() << "\"";
+            }
+
+            if (i != NUM_REGISTERS - 1)
+                cout << "     "; // spacing between registers
+        }
+
+        cout << endl;
+    }
+
     // helper function to read input for registers
     void handle_register_input(calc &c, reg_name name)
     {
@@ -65,21 +90,80 @@ namespace claudia_calc
         }
     }
 
-    void handle_operation(calc& c, operation op){
-        reg& regA = c.get(A);
-        reg& regB = c.get(B);
-
-        if (regA.type() == NUMBER && regB.type() == NUMBER){
-            handle_number_operation(regA, regB, op);
-        }
-        else if
-            (regA.type() == NUMBER && regB.type() == STRING){
-                handle_string_operation(regA, regB, op)
-        }
-        else{
-            spdlog::warn("Mixed type not allowed.\n");
+    char get_op_symbol(operation op)
+    {
+        switch (op)
+        {
+        case PLUS:
+            return '+';
+        case MINUS:
+            return '-';
+        case MULTIPLY:
+            return '*';
+        case DIVIDE:
+            return '/';
+        default:
+            return '?';
         }
     }
+
+    void handle_number_operation(reg& regA, reg& regB, operation op)
+    {
+        float lhs = regA.get_number();
+        float rhs = regB.get_number();
+
+        switch (op)
+        {
+        case PLUS:
+            lhs = lhs + rhs;
+            break;
+        case MINUS:
+            lhs = lhs - rhs;
+            break;
+        case MULTIPLY:
+            lhs = lhs * rhs;
+            break;
+        case DIVIDE:
+            if (rhs == 0.0F)
+            {
+                // cout << "Division by zero is not allowed.\n";
+                spdlog::warn("Attempted division by zero.");
+                return;
+            }
+            lhs = lhs / rhs;
+            break;
+        default:
+            cout << "Unknown number operation.\n";
+            return;
+        }
+
+        regA.set_number(lhs);
+        spdlog::info("Result of {} {} {} = {}", lhs, get_op_symbol(op), rhs, lhs);
+    }
+
+    void handle_operation(calc &c, operation op, reg_name lhs, reg_name rhs)
+    {
+        reg &regLHS = c.get(lhs);
+        reg &regRHS = c.get(rhs);
+
+        if (regLHS.type() == NUMBER && regRHS.type() == NUMBER)
+        {
+            handle_number_operation(regLHS, regRHS, op);
+            
+        }
+        else if (regLHS.type() == STRING && regRHS.type() == STRING)
+        {
+            // handle_string_operation(regLHS, regRHS, op);
+        }
+        else
+        {
+            cout << " Mixed types are not supported.\n";
+        }
+
+        c.display_registers();
+    }
+
+    
 
     // execute a command
     // a   Asks the user to enter a number or string for A
@@ -133,11 +217,17 @@ namespace claudia_calc
 
         case '+':
         {
-            float a_val = c.get(A).get_number();
-            float b_val = c.get(B).get_number();
-            float result = a_val + b_val;
-            c.set(A, result);
-            spdlog::info("A = A + B -> {} + {} = {}", a_val, b_val, result);
+            char lhs_ch, rhs_ch;
+            cout << "Enter LHS register (A–D): ";
+            cin >> lhs_ch;
+            cout << "Enter RHS register (A–D): ";
+            cin >> rhs_ch;
+
+            reg_name lhs = static_cast<reg_name>(tolower(lhs_ch) - 'a');
+            reg_name rhs = static_cast<reg_name>(tolower(rhs_ch) - 'a');
+
+            handle_operation(c, PLUS, lhs, rhs);
+            break;
             // spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         }
@@ -183,7 +273,8 @@ namespace claudia_calc
         }
         case 'p':
         {
-            spdlog::error("cmd={} not implemented", cmd_ch);
+            c.display_registers();
+            // spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         }
         case 'q':
