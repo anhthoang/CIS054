@@ -90,23 +90,7 @@ namespace claudia_calc
         }
     }
 
-    char get_op_symbol(operation op)
-    {
-        switch (op)
-        {
-        case PLUS:
-            return '+';
-        case MINUS:
-            return '-';
-        case MULTIPLY:
-            return '*';
-        case DIVIDE:
-            return '/';
-        default:
-            return '?';
-        }
-    }
-
+    //Helper function to handle operation for numbers
     void handle_number_operation(reg& regA, reg& regB, operation op)
     {
         float lhs = regA.get_number();
@@ -133,18 +117,28 @@ namespace claudia_calc
             lhs = lhs / rhs;
             break;
         default:
-            cout << "Unknown number operation.\n";
+            spdlog::info("Unknown number operation");
             return;
         }
 
         regA.set_number(lhs);
-        spdlog::info("Result of {} {} {} = {}", lhs, get_op_symbol(op), rhs, lhs);
+        spdlog::info("Result {} ", lhs);
     }
 
+    //Helper function to handle operations with strings
+    void handle_string_operation(reg& regA, reg& regB, operation op){
+        
+    }
+    /*
+     Function to handle operations, covers two cases:
+     - registers are numbers
+     - one of registers is string
+    */
+    
     void handle_operation(calc &c, operation op, reg_name lhs, reg_name rhs)
     {
-        reg &regLHS = c.get(lhs);
-        reg &regRHS = c.get(rhs);
+        reg& regLHS = c.get(lhs);
+        reg& regRHS = c.get(rhs);
 
         if (regLHS.type() == NUMBER && regRHS.type() == NUMBER)
         {
@@ -157,7 +151,7 @@ namespace claudia_calc
         }
         else
         {
-            cout << " Mixed types are not supported.\n";
+            spdlog::info("Mixed type of registers are not allowed");
         }
 
         c.display_registers();
@@ -228,42 +222,75 @@ namespace claudia_calc
 
             handle_operation(c, PLUS, lhs, rhs);
             break;
-            // spdlog::error("cmd={} not implemented", cmd_ch);
-            break;
         }
         case '-':
         {
-            spdlog::error("cmd={} not implemented", cmd_ch);
+            char lhs_ch, rhs_ch;
+            cout << "Enter LHS register (A–D): ";
+            cin >> lhs_ch;
+            cout << "Enter RHS register (A–D): ";
+            cin >> rhs_ch;
+
+            reg_name lhs = static_cast<reg_name>(tolower(lhs_ch) - 'a');
+            reg_name rhs = static_cast<reg_name>(tolower(rhs_ch) - 'a');
+
+            handle_operation(c, MINUS, lhs, rhs);
             break;
         }
         case '*':
         {
-            spdlog::error("cmd={} not implemented", cmd_ch);
+            char lhs_ch, rhs_ch;
+            cout << "Enter LHS register (A–D): ";
+            cin >> lhs_ch;
+            cout << "Enter RHS register (A–D): ";
+            cin >> rhs_ch;
+
+            reg_name lhs = static_cast<reg_name>(tolower(lhs_ch) - 'a');
+            reg_name rhs = static_cast<reg_name>(tolower(rhs_ch) - 'a');
+
+            handle_operation(c, MULTIPLY, lhs, rhs);
             break;
         }
         case '/':
         {
-            spdlog::error("cmd={} not implemented", cmd_ch);
+            char lhs_ch, rhs_ch;
+            cout << "Enter LHS register (A-D): ";
+            cin >> lhs_ch;
+            cout << "Enter RHS register (A-D): ";
+            cin >> rhs_ch;
+
+            reg_name lhs = static_cast<reg_name>(tolower(lhs_ch) - 'a');
+            reg_name rhs = static_cast<reg_name>(tolower(rhs_ch) - 'a');
+
+            handle_operation(c, DIVIDE, lhs, rhs);
             break;
         }
         case '1':
-        {
-            spdlog::error("cmd={} not implemented", cmd_ch);
+        {   
+            c.clear(A);
+            c.display_registers();
+            //spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         }
         case '2':
-        {
-            spdlog::error("cmd={} not implemented", cmd_ch);
+        {   
+            c.clear(B);
+            c.display_registers();
+            //spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         }
         case '3':
         {
-            spdlog::error("cmd={} not implemented", cmd_ch);
+            c.clear(C);
+            c.display_registers();
+            //spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         }
         case '4':
-        {
-            spdlog::error("cmd={} not implemented", cmd_ch);
+        {   
+            c.clear(D);
+            c.display_registers();
+            //spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         }
         case 'm':
