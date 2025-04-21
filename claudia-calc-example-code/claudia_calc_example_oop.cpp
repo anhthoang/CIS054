@@ -43,21 +43,41 @@ namespace claudia_calc
         print_line();
     }
 
-    //helper function to read input for registers 
-    void handle_register_input(calc& c, reg_name name) {
+    // helper function to read input for registers
+    void handle_register_input(calc &c, reg_name name)
+    {
         string input;
         cout << "Enter value for register " << static_cast<char>('A' + static_cast<int>(name)) << ": ";
         cin.ignore();
         getline(cin, input);
-    
+
         stringstream ss(input);
         float num;
-        if (ss >> num && ss.eof()) {
+        if (ss >> num && ss.eof())
+        {
             c.set(name, num);
             spdlog::info("Stored number {} in register {}", num, static_cast<char>('A' + static_cast<int>(name)));
-        } else {
+        }
+        else
+        {
             c.get(name).set_string(input);
             spdlog::info("Stored string \"{}\" in register {}", input, static_cast<char>('A' + static_cast<int>(name)));
+        }
+    }
+
+    void handle_operation(calc& c, operation op){
+        reg& regA = c.get(A);
+        reg& regB = c.get(B);
+
+        if (regA.type() == NUMBER && regB.type() == NUMBER){
+            handle_number_operation(regA, regB, op);
+        }
+        else if
+            (regA.type() == NUMBER && regB.type() == STRING){
+                handle_string_operation(regA, regB, op)
+        }
+        else{
+            spdlog::warn("Mixed type not allowed.\n");
         }
     }
 
@@ -93,24 +113,24 @@ namespace claudia_calc
         {
         case 'a':
 
-            handle_register_input(c,A);
+            handle_register_input(c, A);
             break;
-        
+
         case 'b':
-        {
-            spdlog::error("cmd={} not implemented", cmd_ch);
+
+            handle_register_input(c, B);
             break;
-        }
+
         case 'c':
-        {
-            spdlog::error("cmd={} not implemented", cmd_ch);
+
+            handle_register_input(c, C);
             break;
-        }
+
         case 'd':
-        {
-            spdlog::error("cmd={} not implemented", cmd_ch);
+
+            handle_register_input(c, D);
             break;
-        }
+
         case '+':
         {
             float a_val = c.get(A).get_number();
