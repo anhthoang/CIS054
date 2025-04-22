@@ -31,6 +31,8 @@ namespace claudia_calc
         print_line();
         print_title("ClaudiaCalc");
         print_line();
+        c.display_registers();
+        print_line();
         cout << "+\tAdd" << endl;
         cout << "-\tSubtract" << endl;
         cout << "*\tMultiply" << endl;
@@ -43,6 +45,7 @@ namespace claudia_calc
         print_line();
     }
 
+    //helper function to display registers
     void calc::display_registers() const
     {
         for (int i = 0; i < NUM_REGISTERS; ++i)
@@ -58,11 +61,11 @@ namespace claudia_calc
             }
             else if (r.type() == STRING)
             {
-                cout << "string = \"" << r.get_string() << "\"";
+                cout << "string = " << r.get_string() << "";
             }
 
             if (i != NUM_REGISTERS - 1)
-                cout << "     "; // spacing between registers
+                cout << "     ";
         }
 
         cout << endl;
@@ -81,17 +84,17 @@ namespace claudia_calc
         if (ss >> num && ss.eof())
         {
             c.set(name, num);
-            spdlog::info("Stored number {} in register {}", num, static_cast<char>('A' + static_cast<int>(name)));
+            c.display_registers();
         }
         else
         {
             c.get(name).set_string(input);
-            spdlog::info("Stored string \"{}\" in register {}", input, static_cast<char>('A' + static_cast<int>(name)));
+            c.display_registers();
         }
     }
 
-    //Helper function to handle operation for numbers
-    void handle_number_operation(reg& regA, reg& regB, operation op)
+    // Helper function to handle operation for numbers
+    void handle_number_operation(reg &regA, reg &regB, operation op)
     {
         float lhs = regA.get_number();
         float rhs = regB.get_number();
@@ -110,8 +113,7 @@ namespace claudia_calc
         case DIVIDE:
             if (rhs == 0.0F)
             {
-                // cout << "Division by zero is not allowed.\n";
-                spdlog::warn("Attempted division by zero.");
+                spdlog::info("Division by zero is invalid");
                 return;
             }
             lhs = lhs / rhs;
@@ -122,42 +124,112 @@ namespace claudia_calc
         }
 
         regA.set_number(lhs);
-        spdlog::info("Result {} ", lhs);
     }
 
-    //Helper function to handle operations with strings
-    void handle_string_operation(reg& regA, reg& regB, operation op){
-        
+    // Helper function to handle operations with strings
+    void handle_string_operation(reg &regA, reg &regB, operation op)
+    {
+        reg_type typeA = regA.type();
+        reg_type typeB = regB.type();
+
+        string lhs = regA.get_string();
+        string rhs = regB.get_string();
+        string result;
+
+        // Case 1: both strings
+        if (typeA == STRING && typeB == STRING)
+        {
+            switch (op)
+            {
+            case PLUS:
+                result = lhs + rhs;
+                break;
+            case MINUS:
+            {
+                size_t pos = lhs.find(rhs);
+                result = lhs;
+                if (pos != string::npos)
+                {
+                    result.erase(pos, rhs.length());
+                }
+                break;
+            }
+            case MULTIPLY:
+            {
+                for (char chL : lhs)
+                {
+                    for (char chR : rhs)
+                    {
+                        result += chL;
+                        result += chR;
+                    }
+                }
+                break;
+            }
+            default:
+                spdlog::info("Unsupported operation for strings.");
+                return;
+            }
+        }
+
+        // Case 2: one string, one number → only allow MULTIPLY
+        else if (op == MULTIPLY &&
+                 ((typeA == STRING && typeB == NUMBER) ||
+                  (typeA == NUMBER && typeB == STRING)))
+        {
+            string str_part;
+            float repeat_float = 0;
+
+            if (typeA == NUMBER && typeB == STRING)
+            {
+                str_part = rhs;
+                repeat_float = regA.get_number();
+            }
+            else
+            {
+                str_part = lhs;
+                repeat_float = regB.get_number();
+            }
+
+            int repeat_count = static_cast<int>(floor(repeat_float));
+            for (int i = 0; i < repeat_count; ++i)
+            {
+                result += str_part;
+            }
+        }
+
+        // Case 3: invalid mixed type for +, -, or unsupported op
+        else
+        {
+            spdlog::info("Invalid operation for mixed types");
+            return;
+        }
+
+        regA.set_string(result);
     }
+
     /*
      Function to handle operations, covers two cases:
      - registers are numbers
      - one of registers is string
     */
-    
+
     void handle_operation(calc &c, operation op, reg_name lhs, reg_name rhs)
     {
-        reg& regLHS = c.get(lhs);
-        reg& regRHS = c.get(rhs);
+        reg &regLHS = c.get(lhs);
+        reg &regRHS = c.get(rhs);
 
         if (regLHS.type() == NUMBER && regRHS.type() == NUMBER)
         {
             handle_number_operation(regLHS, regRHS, op);
-            
-        }
-        else if (regLHS.type() == STRING && regRHS.type() == STRING)
-        {
-            // handle_string_operation(regLHS, regRHS, op);
         }
         else
         {
-            spdlog::info("Mixed type of registers are not allowed");
+            handle_string_operation(regLHS, regRHS, op);
         }
 
         c.display_registers();
     }
-
-    
 
     // execute a command
     // a   Asks the user to enter a number or string for A
@@ -184,7 +256,7 @@ namespace claudia_calc
             spdlog::error("Empty command");
             return;
         }
-        // lower annd get first char of command
+        // lower and get first char of command
         char const cmd_ch = std::tolower(cmd[0]);
 
         switch (cmd_ch)
@@ -266,31 +338,27 @@ namespace claudia_calc
             break;
         }
         case '1':
-        {   
+        {
             c.clear(A);
             c.display_registers();
-            //spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         }
         case '2':
-        {   
+        {
             c.clear(B);
             c.display_registers();
-            //spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         }
         case '3':
         {
             c.clear(C);
             c.display_registers();
-            //spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         }
         case '4':
-        {   
+        {
             c.clear(D);
             c.display_registers();
-            //spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         }
         case 'm':
@@ -301,7 +369,6 @@ namespace claudia_calc
         case 'p':
         {
             c.display_registers();
-            // spdlog::error("cmd={} not implemented", cmd_ch);
             break;
         }
         case 'q':

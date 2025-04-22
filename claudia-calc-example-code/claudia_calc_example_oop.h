@@ -35,6 +35,10 @@ namespace claudia_calc
         DIVIDE = '/'
     };
 
+    /*
+    Class reg. this class include attributes of registers(name, type (num or string), value )
+    Also, this class has some method of registers like getters setters of num or string, type, or clear value of registers
+    */
     class reg
     {
     private:
@@ -71,6 +75,7 @@ namespace claudia_calc
         reg_type type() const { return _type; }
     };
 
+    //Class calc
     class calc
     {
     private:
@@ -78,13 +83,14 @@ namespace claudia_calc
 
     public:
         calc();
-
         reg &get(reg_name name) { return _regs[static_cast<int>(name)]; }
         void set(reg_name name, float value) { _regs[static_cast<int>(name)].set_number(value); }
+        void set(reg_name name, string value) { _regs[static_cast<int>(name)].set_string(value); }
         void clear(reg_name name) { _regs[static_cast<int>(name)].clear(); }
         void display_registers() const; 
     };
 
+    //Class UI
     class ui
     {
 
