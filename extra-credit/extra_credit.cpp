@@ -17,7 +17,7 @@ int main()
 {
 
     // Declare value of x, n
-    double x;
+    float x;
     int n;
 
     // reading base number and exponent from user
@@ -32,7 +32,7 @@ int main()
         cout << "Please enter a non-negative number" << endl;
         cin >> n;
     }
-    double result = power(x, n);
+    float result = power(x, n);
     cout << x << " raised to the power of " << n << " is " << result << endl;
     return 0;
 }
