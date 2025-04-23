@@ -45,7 +45,7 @@ namespace claudia_calc
         print_line();
     }
 
-    //helper function to display registers
+    // helper function to display registers
     void calc::display_registers() const
     {
         for (int i = 0; i < NUM_REGISTERS; ++i)
@@ -262,25 +262,25 @@ namespace claudia_calc
         switch (cmd_ch)
         {
         case 'a':
-
+        {
             handle_register_input(c, A);
             break;
-
+        }
         case 'b':
-
+        {
             handle_register_input(c, B);
             break;
-
+        }
         case 'c':
-
+        {
             handle_register_input(c, C);
             break;
-
+        }
         case 'd':
-
+        {
             handle_register_input(c, D);
             break;
-
+        }
         case '+':
         {
             char lhs_ch, rhs_ch;

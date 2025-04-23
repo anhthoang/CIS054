@@ -75,7 +75,7 @@ namespace claudia_calc
         reg_type type() const { return _type; }
     };
 
-    //Class calc
+    // Class calc, holding array of registers and methods to get/set/clear/display registers
     class calc
     {
     private:
@@ -87,10 +87,10 @@ namespace claudia_calc
         void set(reg_name name, float value) { _regs[static_cast<int>(name)].set_number(value); }
         void set(reg_name name, string value) { _regs[static_cast<int>(name)].set_string(value); }
         void clear(reg_name name) { _regs[static_cast<int>(name)].clear(); }
-        void display_registers() const; 
+        void display_registers() const;
     };
 
-    //Class UI
+    // Class UI
     class ui
     {
 
